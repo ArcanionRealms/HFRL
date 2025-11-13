@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - HFRL Integration Hub</title>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Prism CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --magenta: #FF00FF;
+            --cyan: #00FFFF;
+            --deep-space: #0A0A0A;
+            --cosmic-purple: #6A0DAD;
+            --starlight: #FFFFFF;
+            --neon-blue: #2196F3;
+            --electric-pink: #E91E63;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--deep-space);
+            color: var(--starlight);
+            overflow-x: hidden;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .fira-code {
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .cosmic-bg {
+            background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #16213E 100%);
+            position: relative;
+        }
+        
+        .holographic {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .doc-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .doc-section:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .doc-header {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .doc-header:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .doc-content {
+            padding: 1.5rem;
+            display: none;
+        }
+        
+        .doc-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--cyan);
+            overflow-x: auto;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--magenta), var(--cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.3);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .toc {
+            position: sticky;
+            top: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .toc a {
+            display: block;
+            padding: 0.5rem 0;
+            color: #9CA3AF;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+            padding-left: 1rem;
+        }
+        
+        .toc a:hover {
+            color: var(--cyan);
+            border-left-color: var(--cyan);
+            padding-left: 1.5rem;
+        }
+        
+        .toc a.active {
+            color: var(--magenta);
+            border-left-color: var(--magenta);
+            font-weight: 600;
+        }
+        
+        .api-endpoint {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--cyan);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        .parameter-table th,
+        .parameter-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .parameter-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+            color: var(--cyan);
+        }
+        
+        .parameter-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #FFC107;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .info-box {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--cyan);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .success-box {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body class="cosmic-bg">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 holographic">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="orbitron text-2xl font-bold text-cyan-400">HFRL Hub</div>
+                    <div class="text-sm text-gray-300">Documentation</div>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="index.html" class="text-gray-300 hover:text-cyan-400 transition-colors">Workspace</a>
+                    <a href="settings.html" class="text-gray-300 hover:text-cyan-400 transition-colors">Settings</a>
+                    <a href="analytics.html" class="text-gray-300 hover:text-cyan-400 transition-colors">Analytics</a>
+                    <a href="documentation.html" class="text-cyan-400 hover:text-magenta-400 transition-colors">Docs</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="pt-24 pb-16">
+        <div class="container mx-auto px-6">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <h1 class="orbitron text-4xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-magenta-400 to-cyan-400 mb-4">
+                    Documentation
+                </h1>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Complete guide to mastering Human Feedback Reinforcement Learning with our comprehensive documentation.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Table of Contents -->
+                <div class="lg:col-span-1">
+                    <div class="toc">
+                        <h3 class="orbitron text-lg font-semibold text-magenta-400 mb-4">Quick Navigation</h3>
+                        <a href="#getting-started" onclick="scrollToSection('getting-started')">Getting Started</a>
+                        <a href="#core-concepts" onclick="scrollToSection('core-concepts')">Core Concepts</a>
+                        <a href="#setup-guide" onclick="scrollToSection('setup-guide')">Setup Guide</a>
+                        <a href="#using-workspace" onclick="scrollToSection('using-workspace')">Using the Workspace</a>
+                        <a href="#feedback-system" onclick="scrollToSection('feedback-system')">Feedback System</a>
+                        <a href="#analytics" onclick="scrollToSection('analytics')">Analytics & Metrics</a>
+                        <a href="#api-reference" onclick="scrollToSection('api-reference')">API Reference</a>
+                        <a href="#best-practices" onclick="scrollToSection('best-practices')">Best Practices</a>
+                        <a href="#troubleshooting" onclick="scrollToSection('troubleshooting')">Troubleshooting</a>
+                        <a href="#examples" onclick="scrollToSection('examples')">Code Examples</a>
+                    </div>
+                </div>
+                
+                <!-- Documentation Content -->
+                <div class="lg:col-span-3">
+                    <!-- Getting Started -->
+                    <div id="getting-started" class="doc-section">
+                        <div class="doc-header" onclick="toggleSection('getting-started')">
+                            <h2 class="orbitron text-2xl font-bold text-cyan-400">Getting Started</h2>
+                            <p class="text-gray-400 mt-2">Learn the basics of HFRL and get up and running quickly</p>
+                        </div>
+                        <div class="doc-content">
+                            <div class="space-y-6">
+                                <div class="success-box">
+                                    <strong>Welcome to HFRL Integration Hub!</strong> This platform revolutionizes AI development by combining human expertise with machine learning through an intuitive feedback-driven approach.
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">What is Human Feedback Reinforcement Learning?</h3>
+                                <p>HFRL is an advanced AI training methodology that incorporates human judgment into the model improvement process. Instead of relying solely on automated metrics, this approach uses human feedback to guide model behavior, resulting in more accurate, relevant, and contextually appropriate responses.</p>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Key Benefits</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="feature-card">
+                                        <span class="feature-icon">🎯</span>
+                                        <h4 class="font-semibold mb-2">Precision Training</h4>
+                                        <p class="text-sm text-gray-400">Target specific aspects of model behavior for improvement</p>
+                                    </div>
+                                    <div class="feature-card">
+                                        <span class="feature-icon">⚡</span>
+                                        <h4 class="font-semibold mb-2">Rapid Iteration</h4>
+                                        <p class="text-sm text-gray-400">See improvements in real-time with immediate feedback integration</p>
+                                    </div>
+                                    <div class="feature-card">
+                                        <span class="feature-icon">📊</span>
+                                        <h4 class="font-semibold mb-2">Data-Driven Insights</h4>
+                                        <p class="text-sm text-gray-400">Comprehensive analytics to track progress and identify patterns</p>
+                                    </div>
+                                    <div class="feature-card">
+                                        <span class="feature-icon">🤝</span>
+                                        <h4 class="font-semibold mb-2">Collaborative Learning</h4>
+                                        <p class="text-sm text-gray-400">Multiple users can contribute to model training and improvement</p>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">System Requirements</h3>
+                                <ul class="list-disc list-inside space-y-2 text-gray-300">
+                                    <li>Modern web browser (Chrome 90+, Firefox 88+, Safari 14+)</li>
+                                    <li>Stable internet connection for API access</li>
+                                    <li>API keys from supported AI providers (Deepseek, Kimi K2, OpenAI, Anthropic)</li>
+                                    <li>Minimum 4GB RAM for optimal performance</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Core Concepts -->
+                    <div id="core-concepts" class="doc-section">
+                        <div class="doc-header" onclick="toggleSection('core-concepts')">
+                            <h2 class="orbitron text-2xl font-bold text-cyan-400">Core Concepts</h2>
+                            <p class="text-gray-400 mt-2">Understand the fundamental principles behind HFRL</p>
+                        </div>
+                        <div class="doc-content">
+                            <div class="space-y-6">
+                                <h3 class="text-xl font-semibold text-magenta-400">The Feedback Loop</h3>
+                                <p>The core of HFRL is the continuous feedback loop that drives model improvement:</p>
+                                
+                                <div class="flex items-center justify-between my-6">
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-full flex items-center justify-center text-2xl mb-2">1</div>
+                                        <div class="text-sm">Generate</div>
+                                    </div>
+                                    <div class="flex-1 h-0.5 bg-gradient-to-r from-magenta-500 to-cyan-500 mx-4"></div>
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-full flex items-center justify-center text-2xl mb-2">2</div>
+                                        <div class="text-sm">Feedback</div>
+                                    </div>
+                                    <div class="flex-1 h-0.5 bg-gradient-to-r from-magenta-500 to-cyan-500 mx-4"></div>
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-full flex items-center justify-center text-2xl mb-2">3</div>
+                                        <div class="text-sm">Analyze</div>
+                                    </div>
+                                    <div class="flex-1 h-0.5 bg-gradient-to-r from-magenta-500 to-cyan-500 mx-4"></div>
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-full flex items-center justify-center text-2xl mb-2">4</div>
+                                        <div class="text-sm">Improve</div>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Quality Metrics</h3>
+                                <p>Our system evaluates AI responses across multiple dimensions:</p>
+                                
+                                <table class="parameter-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Metric</th>
+                                            <th>Description</th>
+                                            <th>Scale</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Relevance</td>
+                                            <td>How well the response addresses the prompt</td>
+                                            <td>1-5 stars</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Accuracy</td>
+                                            <td>Factual correctness and precision</td>
+                                            <td>1-5 stars</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Creativity</td>
+                                            <td>Originality and innovative thinking</td>
+                                            <td>1-5 stars</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Clarity</td>
+                                            <td>Clear communication and structure</td>
+                                            <td>1-5 stars</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Completeness</td>
+                                            <td>Thoroughness of the response</td>
+                                            <td>1-5 stars</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Learning Rates</h3>
+                                <div class="info-box">
+                                    <strong>Learning Rate Settings:</strong> Control how aggressively the model adapts to feedback.
+                                    <ul class="list-disc list-inside mt-2 space-y-1">
+                                        <li><strong>Conservative:</strong> Minimal changes, maintains stability</li>
+                                        <li><strong>Balanced:</strong> Moderate adaptation, recommended for most use cases</li>
+                                        <li><strong>Aggressive:</strong> Rapid adaptation, use with caution</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Setup Guide -->
+                    <div id="setup-guide" class="doc-section">
+                        <div class="doc-header" onclick="toggleSection('setup-guide')">
+                            <h2 class="orbitron text-2xl font-bold text-cyan-400">Setup Guide</h2>
+                            <p class="text-gray-400 mt-2">Step-by-step instructions to configure your HFRL environment</p>
+                        </div>
+                        <div class="doc-content">
+                            <div class="space-y-6">
+                                <h3 class="text-xl font-semibold text-magenta-400">Step 1: Obtain API Keys</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">1</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Deepseek API</h4>
+                                            <p class="text-gray-300 mb-2">Visit <a href="https://platform.deepseek.com" class="text-cyan-400 hover:text-magenta-400">Deepseek Platform</a> to create an account and generate your API key.</p>
+                                            <div class="code-block fira-code text-sm">
+                                                <pre>API Key Format: sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">2</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Kimi K2 API</h4>
+                                            <p class="text-gray-300 mb-2">Access <a href="https://kimi.moonshot.cn" class="text-cyan-400 hover:text-magenta-400">Kimi Platform</a> to register and obtain your API credentials.</p>
+                                            <div class="code-block fira-code text-sm">
+                                                <pre>API Key Format: k2-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">3</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Other Providers</h4>
+                                            <p class="text-gray-300">Similar process for OpenAI, Anthropic, and other supported platforms.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Step 2: Configure Your Environment</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">1</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Navigate to Settings</h4>
+                                            <p class="text-gray-300">Click on "Settings" in the navigation menu to access the configuration panel.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">2</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Enter API Credentials</h4>
+                                            <p class="text-gray-300 mb-2">Input your API keys in the respective provider fields.</p>
+                                            <div class="warning-box">
+                                                <strong>Security Note:</strong> API keys are stored locally in your browser and never transmitted to our servers.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">3</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Test Connection</h4>
+                                            <p class="text-gray-300">Use the "Test Connection" button to verify your API credentials are working correctly.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Step 3: Customize Your Experience</h3>
+                                <p>Personalize the interface and configure default settings:</p>
+                                <ul class="list-disc list-inside space-y-2 text-gray-300">
+                                    <li>Choose your preferred visual theme (Cosmic, Neon, or Aurora)</li>
+                                    <li>Adjust accent colors to match your preferences</li>
+                                    <li>Set default model parameters (temperature, max tokens)</li>
+                                    <li>Configure privacy and data storage options</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Using the Workspace -->
+                    <div id="using-workspace" class="doc-section">
+                        <div class="doc-header" onclick="toggleSection('using-workspace')">
+                            <h2 class="orbitron text-2xl font-bold text-cyan-400">Using the Workspace</h2>
+                            <p class="text-gray-400 mt-2">Master the main application interface and workflow</p>
+                        </div>
+                        <div class="doc-content">
+                            <div class="space-y-6">
+                                <h3 class="text-xl font-semibold text-magenta-400">The Main Interface</h3>
+                                <p>The workspace is divided into several key sections:</p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="feature-card">
+                                        <span class="feature-icon">🔌</span>
+                                        <h4 class="font-semibold mb-2">Model Connection</h4>
+                                        <p class="text-sm text-gray-400">Connect and manage your AI model APIs</p>
+                                    </div>
+                                    <div class="feature-card">
+                                        <span class="feature-icon">📁</span>
+                                        <h4 class="font-semibold mb-2">Reference Upload</h4>
+                                        <p class="text-sm text-gray-400">Upload files for context and training data</p>
+                                    </div>
+                                    <div class="feature-card">
+                                        <span class="feature-icon">📝</span>
+                                        <h4 class="font-semibold mb-2">Prompt Builder</h4>
+                                        <p class="text-sm text-gray-400">Create and configure generation tasks</p>
+                                    </div>
+                                    <div class="feature-card">
+                                        <span class="feature-icon">💬</span>
+                                        <h4 class="font-semibold mb-2">Response Display</h4>
+                                        <p class="text-sm text-gray-400">View and interact with AI-generated content</p>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Creating Your First Task</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">1</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Select Task Type</h4>
+                                            <p class="text-gray-300">Choose from dialogue generation, code creation, story writing, data analysis, or creative writing.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">2</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Write Your Prompt</h4>
+                                            <p class="text-gray-300 mb-2">Provide clear instructions for what you want the AI to generate.</p>
+                                            <div class="code-block fira-code text-sm">
+                                                <pre>Example: "Generate character dialogue for a sci-fi scene where a captain discovers an alien artifact. The captain should be cautious but curious, and the dialogue should reveal their background as a former scientist."</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">3</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Adjust Parameters</h4>
+                                            <p class="text-gray-300">Fine-tune temperature (creativity) and max tokens (response length) settings.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start space-x-4">
+                                        <div class="step-number">4</div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Generate Content</h4>
+                                            <p class="text-gray-300">Click the "Generate Content" button and watch as your AI creates the requested output.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Feedback System -->
+                    <div id="feedback-system" class="doc-section">
+                        <div class="doc-header" onclick="toggleSection('feedback-system')">
+                            <h2 class="orbitron text-2xl font-bold text-cyan-400">Feedback System</h2>
+                            <p class="text-gray-400 mt-2">Learn how to provide effective feedback for optimal model training</p>
+                        </div>
+                        <div class="doc-content">
+                            <div class="space-y-6">
+                                <h3 class="text-xl font-semibold text-magenta-400">Types of Feedback</h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="api-endpoint">
+                                        <h4 class="font-semibold mb-2">⭐ Quality Rating</h4>
+                                        <p class="text-sm text-gray-300 mb-2">Overall assessment of the response quality using a 5-star system.</p>
+                                        <ul class="list-disc list-inside text-xs text-gray-400">
+                                            <li>★☆☆☆☆ (1): Poor quality, major issues</li>
+                                            <li>★★☆☆☆ (2): Below average, some problems</li>
+                                            <li>★★★☆☆ (3): Average, acceptable quality</li>
+                                            <li>★★★★☆ (4): Good quality, minor improvements needed</li>
+                                            <li>★★★★★ (5): Excellent quality, meets all requirements</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="api-endpoint">
+                                        <h4 class="font-semibold mb-2">💬 Written Comments</h4>
+                                        <p class="text-sm text-gray-300 mb-2">Detailed feedback explaining specific improvements or praising good aspects.</p>
+                                        <div class="code-block fira-code text-sm">
+                                            <pre>Example: "The dialogue captures the character's personality well, but could benefit from more technical jargon to reflect their scientific background. Consider adding references to specific research methodologies."</pre>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="api-endpoint">
+                                        <h4 class="font-semibold mb-2">🎯 Inline Feedback</h4>
+                                        <p class="text-sm text-gray-300">Click on specific words or phrases in the response to provide targeted feedback about particular elements.</p>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Best Practices for Effective Feedback</h3>
+                                <div class="success-box">
+                                    <strong>Do:</strong>
+                                    <ul class="list-disc list-inside mt-2 space-y-1">
+                                        <li>Be specific about what works and what doesn't</li>
+                                        <li>Provide examples of desired improvements</li>
+                                        <li>Consider the context and intended audience</li>
+                                        <li>Use consistent criteria across sessions</li>
+                                        <li>Focus on both strengths and areas for improvement</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="warning-box">
+                                    <strong>Avoid:</strong>
+                                    <ul class="list-disc list-inside mt-2 space-y-1">
+                                        <li>Vague feedback like "good" or "bad" without explanation</li>
+                                        <li>Contradictory feedback across different sessions</li>
+                                        <li>Personal preferences that don't serve the broader goal</li>
+                                        <li>Overwhelming the model with too many changes at once</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- API Reference -->
+                    <div id="api-reference" class="doc-section">
+                        <div class="doc-header" onclick="toggleSection('api-reference')">
+                            <h2 class="orbitron text-2xl font-bold text-cyan-400">API Reference</h2>
+                            <p class="text-gray-400 mt-2">Technical documentation for developers integrating with HFRL</p>
+                        </div>
+                        <div class="doc-content">
+                            <div class="space-y-6">
+                                <h3 class="text-xl font-semibold text-magenta-400">Authentication</h3>
+                                <p>All API requests require authentication using your provider-specific API keys.</p>
+                                
+                                <div class="api-endpoint">
+                                    <h4 class="font-semibold mb-2">Headers</h4>
+                                    <div class="code-block fira-code text-sm">
+                                        <pre>Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json</pre>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Endpoints</h3>
+                                
+                                <div class="api-endpoint">
+                                    <h4 class="font-semibold mb-2">Generate Content</h4>
+                                    <p class="text-sm text-gray-400 mb-2">POST /api/generate</p>
+                                    <div class="code-block fira-code text-sm">
+                                        <pre>{
+  "model": "deepseek-chat",
+  "prompt": "Generate character dialogue...",
+  "temperature": 0.7,
+  "max_tokens": 1000,
+  "context": ["reference materials"]
+}</pre>
+                                    </div>
+                                </div>
+                                
+                                <div class="api-endpoint">
+                                    <h4 class="font-semibold mb-2">Submit Feedback</h4>
+                                    <p class="text-sm text-gray-400 mb-2">POST /api/feedback</p>
+                                    <div class="code-block fira-code text-sm">
+                                        <pre>{
+  "session_id": "session_123",
+  "rating": 4,
+  "comments": "Great response but could be more detailed...",
+  "inline_feedback": [
+    {
+      "position": 45,
+      "word": "artifact",
+      "feedback": "Consider using 'relic' instead"
+    }
+  ]
+}</pre>
+                                    </div>
+                                </div>
+                                
+                                <div class="api-endpoint">
+                                    <h4 class="font-semibold mb-2">Get Analytics</h4>
+                                    <p class="text-sm text-gray-400 mb-2">GET /api/analytics</p>
+                                    <div class="code-block fira-code text-sm">
+                                        <pre>{
+  "period": "7d",
+  "metrics": ["quality", "feedback_count", "improvement_rate"]
+}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Examples -->
+                    <div id="examples" class="doc-section">
+                        <div class="doc-header" onclick="toggleSection('examples')">
+                            <h2 class="orbitron text-2xl font-bold text-cyan-400">Code Examples</h2>
+                            <p class="text-gray-400 mt-2">Practical examples for common use cases</p>
+                        </div>
+                        <div class="doc-content">
+                            <div class="space-y-6">
+                                <h3 class="text-xl font-semibold text-magenta-400">JavaScript Integration</h3>
+                                <div class="code-block fira-code text-sm">
+                                    <pre><code class="language-javascript">// Initialize HFRL client
+const hfrl = new HFRLClient({
+  apiKey: 'your-api-key',
+  provider: 'deepseek'
+});
+
+// Generate content with feedback
+async function generateWithFeedback(prompt) {
+  try {
+    // Generate initial response
+    const response = await hfrl.generate({
+      prompt: prompt,
+      temperature: 0.7,
+      maxTokens: 1000
+    });
+    
+    console.log('Generated content:', response.content);
+    
+    // Submit feedback for improvement
+    await hfrl.submitFeedback({
+      sessionId: response.sessionId,
+      rating: 4,
+      comments: 'Good response, could be more detailed'
+    });
+    
+  } catch (error) {
+    console.error('Generation failed:', error);
+  }
+}</code></pre>
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Python Integration</h3>
+                                <div class="code-block fira-code text-sm">
+                                    <pre><code class="language-python">import requests
+import json
+
+class HFRLClient:
+    def __init__(self, api_key, provider='deepseek'):
+        self.api_key = api_key
+        self.provider = provider
+        self.base_url = 'https://api.hfrl-hub.com'
+    
+    def generate_content(self, prompt, temperature=0.7, max_tokens=1000):
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            'model': self.provider,
+            'prompt': prompt,
+            'temperature': temperature,
+            'max_tokens': max_tokens
+        }
+        
+        response = requests.post(
+            f'{self.base_url}/api/generate',
+            headers=headers,
+            json=data
+        )
+        
+        return response.json()
+    
+    def submit_feedback(self, session_id, rating, comments):
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            'session_id': session_id,
+            'rating': rating,
+            'comments': comments
+        }
+        
+        response = requests.post(
+            f'{self.base_url}/api/feedback',
+            headers=headers,
+            json=data
+        )
+        
+        return response.json()
+
+# Usage example
+client = HFRLClient('your-api-key')
+response = client.generate_content('Generate a sci-fi character backstory')
+print(response['content'])</code></pre>
+                                </div>
+                                
+                                <h3 class="text-xl font-semibold text-magenta-400">Batch Processing Example</h3>
+                                <div class="code-block fira-code text-sm">
+                                    <pre><code class="language-javascript">// Process multiple prompts with feedback
+async function batchProcess(prompts) {
+  const results = [];
+  
+  for (const prompt of prompts) {
+    try {
+      const response = await hfrl.generate({
+        prompt: prompt,
+        temperature: 0.6,
+        maxTokens: 800
+      });
+      
+      // Auto-evaluate and provide feedback
+      const quality = evaluateResponse(response.content);
+      
+      await hfrl.submitFeedback({
+        sessionId: response.sessionId,
+        rating: quality.rating,
+        comments: quality.feedback
+      });
+      
+      results.push({
+        prompt: prompt,
+        content: response.content,
+        quality: quality.rating
+      });
+      
+    } catch (error) {
+      console.error(`Failed to process prompt: ${prompt}`, error);
+    }
+  }
+  
+  return results;
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6 text-center">
+            <div class="orbitron text-2xl font-bold text-cyan-400 mb-4">HFRL Integration Hub</div>
+            <div class="text-gray-400 mb-4">Advanced AI Development Through Human Feedback</div>
+            <div class="text-sm text-gray-500">© 2025 HFRL Integration Platform. All rights reserved.</div>
+        </div>
+    </footer>
+    
+    <script>
+        // Documentation Manager
+        class DocumentationManager {
+            constructor() {
+                this.currentSection = null;
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.highlightCode();
+                this.animateOnScroll();
+            }
+            
+            setupEventListeners() {
+                // Smooth scrolling for TOC links
+                document.querySelectorAll('.toc a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetId = link.getAttribute('href').substring(1);
+                        this.scrollToSection(targetId);
+                        this.updateActiveTocLink(link);
+                    });
+                });
+                
+                // Auto-update active TOC link on scroll
+                window.addEventListener('scroll', () => {
+                    this.updateActiveTocOnScroll();
+                });
+            }
+            
+            scrollToSection(sectionId) {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const offsetTop = section.offsetTop - 100;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+            
+            updateActiveTocLink(activeLink) {
+                document.querySelectorAll('.toc a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                activeLink.classList.add('active');
+            }
+            
+            updateActiveTocOnScroll() {
+                const sections = document.querySelectorAll('.doc-section');
+                const scrollPosition = window.scrollY + 150;
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+                    const sectionId = section.getAttribute('id');
+                    
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                        const correspondingLink = document.querySelector(`a[href="#${sectionId}"]`);
+                        if (correspondingLink) {
+                            this.updateActiveTocLink(correspondingLink);
+                        }
+                    }
+                });
+            }
+            
+            highlightCode() {
+                // Initialize Prism.js for code highlighting
+                if (typeof Prism !== 'undefined') {
+                    Prism.highlightAll();
+                }
+            }
+            
+            animateOnScroll() {
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            anime({
+                                targets: entry.target,
+                                translateY: [30, 0],
+                                opacity: [0, 1],
+                                easing: 'easeOutQuad',
+                                duration: 600,
+                                delay: 100
+                            });
+                        }
+                    });
+                }, observerOptions);
+                
+                document.querySelectorAll('.doc-section, .feature-card').forEach(element => {
+                    observer.observe(element);
+                });
+            }
+        }
+        
+        // Global functions
+        function toggleSection(sectionId) {
+            const content = document.querySelector(`#${sectionId} .doc-content`);
+            const isActive = content.classList.contains('active');
+            
+            // Close all sections
+            document.querySelectorAll('.doc-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Open clicked section if it wasn't already active
+            if (!isActive) {
+                content.classList.add('active');
+            }
+        }
+        
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const offsetTop = section.offsetTop - 100;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        
+        // Initialize documentation manager
+        let documentationManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            documentationManager = new DocumentationManager();
+            
+            // Open first section by default
+            toggleSection('getting-started');
+        });
+    </script>
+</body>
+</html>
