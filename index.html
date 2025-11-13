@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HFRL Integration Hub - AI Development Platform</title>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    
+    <!-- Splitting CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --magenta: #FF00FF;
+            --cyan: #00FFFF;
+            --deep-space: #0A0A0A;
+            --cosmic-purple: #6A0DAD;
+            --starlight: #FFFFFF;
+            --neon-blue: #2196F3;
+            --electric-pink: #E91E63;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--deep-space);
+            color: var(--starlight);
+            overflow-x: hidden;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .fira-code {
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .cosmic-bg {
+            background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #16213E 100%);
+            position: relative;
+        }
+        
+        .glow-magenta {
+            box-shadow: 0 0 20px var(--magenta), 0 0 40px var(--magenta);
+        }
+        
+        .glow-cyan {
+            box-shadow: 0 0 20px var(--cyan), 0 0 40px var(--cyan);
+        }
+        
+        .holographic {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .neon-border {
+            border: 2px solid var(--cyan);
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--magenta), var(--cyan), var(--magenta));
+            border-radius: 8px;
+            z-index: -1;
+            animation: neonGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes neonGlow {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+        
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .content-layer {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+            color: var(--cyan);
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .feedback-highlight {
+            background: linear-gradient(90deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3));
+            border-radius: 4px;
+            padding: 2px 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .feedback-highlight:hover {
+            background: linear-gradient(90deg, rgba(255, 0, 255, 0.5), rgba(0, 255, 255, 0.5));
+            transform: scale(1.02);
+        }
+        
+        .model-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.3);
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-connected {
+            background: #4CAF50;
+            box-shadow: 0 0 10px #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-disconnected {
+            background: #f44336;
+            box-shadow: 0 0 10px #f44336;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--magenta), var(--cyan));
+            height: 4px;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="cosmic-bg">
+    <!-- Particle Background -->
+    <div id="particle-bg" class="particle-container"></div>
+    
+    <!-- Navigation -->
+    <nav class="content-layer fixed top-0 w-full z-50 holographic">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="orbitron text-2xl font-bold text-cyan-400">HFRL Hub</div>
+                    <div class="text-sm text-gray-300">AI Development Platform</div>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="index.html" class="text-cyan-400 hover:text-magenta-400 transition-colors">Workspace</a>
+                    <a href="settings.html" class="text-gray-300 hover:text-cyan-400 transition-colors">Settings</a>
+                    <a href="analytics.html" class="text-gray-300 hover:text-cyan-400 transition-colors">Analytics</a>
+                    <a href="documentation.html" class="text-gray-300 hover:text-cyan-400 transition-colors">Docs</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="content-layer pt-24 pb-16">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <h1 class="orbitron text-5xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-magenta-400 to-cyan-400 leading-tight" data-splitting>
+                        Human Feedback<br>Reinforcement Learning
+                    </h1>
+                    <div class="text-xl text-gray-300 leading-relaxed">
+                        <span id="typed-description"></span>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button onclick="scrollToSection('workspace')" class="px-8 py-4 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-lg font-semibold hover:from-magenta-600 hover:to-cyan-600 transition-all transform hover:scale-105 glow-cyan">
+                            Start Training
+                        </button>
+                        <button onclick="openDemoModal()" class="px-8 py-4 holographic rounded-lg font-semibold hover:bg-white hover:bg-opacity-10 transition-all transform hover:scale-105">
+                            View Demo
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <img src="resources/hero-ai-brain.png" alt="AI Neural Network" class="w-full h-auto rounded-lg holographic">
+                    <div class="absolute inset-0 bg-gradient-to-t from-magenta-500/20 to-cyan-500/20 rounded-lg"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Model Connection Panel -->
+    <section id="workspace" class="content-layer py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="orbitron text-3xl font-bold text-center mb-12 text-cyan-400">Model Integration</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- API Configuration -->
+                <div class="lg:col-span-1">
+                    <div class="holographic rounded-lg p-6 space-y-6">
+                        <h3 class="orbitron text-xl font-semibold text-magenta-400">API Configuration</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Model Provider</label>
+                                <select id="model-provider" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <option value="deepseek">Deepseek</option>
+                                    <option value="kimi">Kimi K2</option>
+                                    <option value="openai">OpenAI</option>
+                                    <option value="anthropic">Anthropic</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">API Key</label>
+                                <input type="password" id="api-key" placeholder="Enter your API key" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Model Version</label>
+                                <select id="model-version" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <option value="latest">Latest</option>
+                                    <option value="stable">Stable</option>
+                                    <option value="beta">Beta</option>
+                                </select>
+                            </div>
+                            
+                            <button onclick="testConnection()" class="w-full py-3 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-lg font-semibold hover:from-magenta-600 hover:to-cyan-600 transition-all">
+                                Test Connection
+                            </button>
+                            
+                            <div id="connection-status" class="text-center py-2">
+                                <span class="status-indicator status-disconnected"></span>
+                                <span class="text-gray-400">Disconnected</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Model Selection -->
+                <div class="lg:col-span-2">
+                    <div class="holographic rounded-lg p-6">
+                        <h3 class="orbitron text-xl font-semibold text-magenta-400 mb-6">Available Models</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="model-grid">
+                            <!-- Models will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Content Generation Workspace -->
+    <section class="content-layer py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="orbitron text-3xl font-bold text-center mb-12 text-cyan-400">Training Workspace</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Input Panel -->
+                <div class="space-y-6">
+                    <!-- Reference Upload -->
+                    <div class="holographic rounded-lg p-6">
+                        <h3 class="orbitron text-xl font-semibold text-magenta-400 mb-4">Reference Materials</h3>
+                        <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-cyan-400 transition-colors" id="upload-zone">
+                            <div class="space-y-4">
+                                <div class="text-4xl">📁</div>
+                                <div class="text-gray-400">Drag & drop files here or <button onclick="document.getElementById('file-input').click()" class="text-cyan-400 hover:text-magenta-400">browse</button></div>
+                                <input type="file" id="file-input" multiple class="hidden" accept=".txt,.pdf,.doc,.json">
+                                <div class="text-sm text-gray-500">Supported: TXT, PDF, DOC, JSON</div>
+                            </div>
+                        </div>
+                        <div id="uploaded-files" class="mt-4 space-y-2"></div>
+                    </div>
+                    
+                    <!-- Prompt Builder -->
+                    <div class="holographic rounded-lg p-6">
+                        <h3 class="orbitron text-xl font-semibold text-magenta-400 mb-4">Task Configuration</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Task Type</label>
+                                <select id="task-type" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <option value="dialogue">Character Dialogue</option>
+                                    <option value="code">Code Generation</option>
+                                    <option value="story">Story Writing</option>
+                                    <option value="analysis">Data Analysis</option>
+                                    <option value="creative">Creative Writing</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Prompt</label>
+                                <textarea id="prompt-input" rows="6" placeholder="Describe what you want the AI to generate..." class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none resize-none"></textarea>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Temperature</label>
+                                    <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" class="w-full">
+                                    <div class="text-center text-sm text-gray-400 mt-1" id="temp-value">0.7</div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Max Tokens</label>
+                                    <input type="range" id="max-tokens" min="100" max="4000" step="100" value="1000" class="w-full">
+                                    <div class="text-center text-sm text-gray-400 mt-1" id="tokens-value">1000</div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="generateContent()" class="w-full py-4 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-lg font-bold text-lg hover:from-magenta-600 hover:to-cyan-600 transition-all transform hover:scale-105 glow-magenta">
+                                Generate Content
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Response Panel -->
+                <div class="space-y-6">
+                    <!-- AI Response -->
+                    <div class="holographic rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="orbitron text-xl font-semibold text-magenta-400">AI Response</h3>
+                            <div class="flex space-x-2">
+                                <button onclick="copyResponse()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors">Copy</button>
+                                <button onclick="exportResponse()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors">Export</button>
+                            </div>
+                        </div>
+                        
+                        <div id="response-container" class="min-h-[400px] p-4 bg-gray-900 rounded-lg border border-gray-700">
+                            <div class="text-gray-500 text-center py-20">
+                                Click "Generate Content" to see AI response here...
+                            </div>
+                        </div>
+                        
+                        <!-- Generation Progress -->
+                        <div id="generation-progress" class="mt-4 hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-gray-400">Generating...</span>
+                                <span class="text-sm text-gray-400" id="progress-percent">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="progress-bar h-2 rounded-full" style="width: 0%" id="progress-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Feedback Panel -->
+                    <div class="holographic rounded-lg p-6">
+                        <h3 class="orbitron text-xl font-semibold text-magenta-400 mb-4">Feedback & Training</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Overall Quality</label>
+                                <div class="flex space-x-2" id="quality-rating">
+                                    <button class="quality-star text-2xl text-gray-600 hover:text-yellow-400 transition-colors" data-rating="1">★</button>
+                                    <button class="quality-star text-2xl text-gray-600 hover:text-yellow-400 transition-colors" data-rating="2">★</button>
+                                    <button class="quality-star text-2xl text-gray-600 hover:text-yellow-400 transition-colors" data-rating="3">★</button>
+                                    <button class="quality-star text-2xl text-gray-600 hover:text-yellow-400 transition-colors" data-rating="4">★</button>
+                                    <button class="quality-star text-2xl text-gray-600 hover:text-yellow-400 transition-colors" data-rating="5">★</button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Comments</label>
+                                <textarea id="feedback-comments" rows="4" placeholder="Provide specific feedback about the response..." class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none resize-none"></textarea>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Learning Rate</label>
+                                    <select id="learning-rate" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                        <option value="low">Low (Conservative)</option>
+                                        <option value="medium" selected>Medium (Balanced)</option>
+                                        <option value="high">High (Aggressive)</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Retrain Model</label>
+                                    <button onclick="submitFeedback()" class="w-full py-3 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-lg font-semibold hover:from-magenta-600 hover:to-cyan-600 transition-all">
+                                        Apply Feedback
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Performance Dashboard -->
+    <section class="content-layer py-16">
+        <div class="container mx-auto px-6">
+            <h2 class="orbitron text-3xl font-bold text-center mb-12 text-cyan-400">Training Progress</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Performance Metrics -->
+                <div class="chart-container">
+                    <h3 class="orbitron text-lg font-semibold text-magenta-400 mb-4">Model Performance</h3>
+                    <div id="performance-chart" style="height: 300px;"></div>
+                </div>
+                
+                <!-- Feedback Analysis -->
+                <div class="chart-container">
+                    <h3 class="orbitron text-lg font-semibold text-magenta-400 mb-4">Feedback Quality</h3>
+                    <div id="feedback-chart" style="height: 300px;"></div>
+                </div>
+                
+                <!-- Training Statistics -->
+                <div class="chart-container">
+                    <h3 class="orbitron text-lg font-semibold text-magenta-400 mb-4">Training Stats</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Total Sessions</span>
+                            <span class="text-cyan-400 font-bold" id="total-sessions">42</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Avg Quality Score</span>
+                            <span class="text-magenta-400 font-bold" id="avg-quality">4.2/5</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Improvement Rate</span>
+                            <span class="text-cyan-400 font-bold" id="improvement-rate">+15%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Training Time</span>
+                            <span class="text-magenta-400 font-bold" id="training-time">2.3h</span>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <div class="text-sm text-gray-400 mb-2">Current Progress</div>
+                            <div class="w-full bg-gray-700 rounded-full h-3">
+                                <div class="progress-bar h-3 rounded-full" style="width: 73%"></div>
+                            </div>
+                            <div class="text-right text-sm text-gray-400 mt-1">73% Complete</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="content-layer py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6 text-center">
+            <div class="orbitron text-2xl font-bold text-cyan-400 mb-4">HFRL Integration Hub</div>
+            <div class="text-gray-400 mb-4">Advanced AI Development Through Human Feedback</div>
+            <div class="text-sm text-gray-500">© 2025 HFRL Integration Platform. All rights reserved.</div>
+        </div>
+    </footer>
+    
+    <!-- Demo Modal -->
+    <div id="demo-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="holographic rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="orbitron text-2xl font-bold text-cyan-400">HFRL Demo</h3>
+                <button onclick="closeDemoModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <h4 class="text-lg font-semibold text-magenta-400 mb-2">How it works:</h4>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                        <li>Connect your AI model API (Deepseek, Kimi K2, etc.)</li>
+                        <li>Upload reference materials and configure your task</li>
+                        <li>Generate content with customizable parameters</li>
+                        <li>Provide feedback directly on the AI response</li>
+                        <li>Watch the model improve through reinforcement learning</li>
+                    </ol>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-magenta-400 mb-2">Key Features:</h4>
+                    <ul class="list-disc list-inside space-y-2 text-gray-300">
+                        <li>Real-time API connection testing</li>
+                        <li>Inline feedback and commenting system</li>
+                        <li>Performance analytics and improvement tracking</li>
+                        <li>Collaborative training sessions</li>
+                        <li>Export improved models and configurations</li>
+                    </ul>
+                </div>
+                
+                <div class="text-center">
+                    <button onclick="closeDemoModal(); scrollToSection('workspace')" class="px-6 py-3 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-lg font-semibold hover:from-magenta-600 hover:to-cyan-600 transition-all">
+                        Start Using HFRL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="main.js"></script>
+</body>
+</html>

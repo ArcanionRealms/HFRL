@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - HFRL Integration Hub</title>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --magenta: #FF00FF;
+            --cyan: #00FFFF;
+            --deep-space: #0A0A0A;
+            --cosmic-purple: #6A0DAD;
+            --starlight: #FFFFFF;
+            --neon-blue: #2196F3;
+            --electric-pink: #E91E63;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--deep-space);
+            color: var(--starlight);
+            overflow-x: hidden;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .cosmic-bg {
+            background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #16213E 100%);
+            position: relative;
+        }
+        
+        .holographic {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glow-magenta {
+            box-shadow: 0 0 20px var(--magenta), 0 0 40px var(--magenta);
+        }
+        
+        .glow-cyan {
+            box-shadow: 0 0 20px var(--cyan), 0 0 40px var(--cyan);
+        }
+        
+        .color-picker {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            border: 2px solid #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .color-picker:hover {
+            transform: scale(1.1);
+            border-color: var(--cyan);
+        }
+        
+        .theme-preview {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-preview:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.3);
+        }
+        
+        .theme-preview.active {
+            border: 3px solid var(--cyan);
+            box-shadow: 0 0 30px var(--cyan);
+        }
+        
+        .config-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .config-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.2);
+        }
+        
+        .slider-container {
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--magenta), var(--cyan));
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--starlight);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--cyan);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--starlight);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px var(--cyan);
+        }
+        
+        .api-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-connected {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        
+        .status-disconnected {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+        
+        .status-testing {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+            border: 1px solid #FFC107;
+        }
+    </style>
+</head>
+<body class="cosmic-bg">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 holographic">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="orbitron text-2xl font-bold text-cyan-400">HFRL Hub</div>
+                    <div class="text-sm text-gray-300">Settings</div>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="index.html" class="text-gray-300 hover:text-cyan-400 transition-colors">Workspace</a>
+                    <a href="settings.html" class="text-cyan-400 hover:text-magenta-400 transition-colors">Settings</a>
+                    <a href="analytics.html" class="text-gray-300 hover:text-cyan-400 transition-colors">Analytics</a>
+                    <a href="documentation.html" class="text-gray-300 hover:text-cyan-400 transition-colors">Docs</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="pt-24 pb-16">
+        <div class="container mx-auto px-6">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <h1 class="orbitron text-4xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-magenta-400 to-cyan-400 mb-4">
+                    Configuration Center
+                </h1>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Customize your HFRL experience with intuitive settings and visual themes designed for non-technical users.
+                </p>
+            </div>
+            
+            <!-- Settings Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Visual Theme Settings -->
+                <div class="lg:col-span-2">
+                    <div class="config-card p-8">
+                        <h2 class="orbitron text-2xl font-bold text-magenta-400 mb-6">Visual Customization</h2>
+                        
+                        <!-- Theme Selection -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-cyan-400 mb-4">Choose Your Theme</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="theme-option" data-theme="cosmic">
+                                    <div class="theme-preview active" style="background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #16213E 100%);">
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <span class="text-white font-bold">Cosmic</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2 text-sm text-gray-400">Deep Space</div>
+                                </div>
+                                
+                                <div class="theme-option" data-theme="neon">
+                                    <div class="theme-preview" style="background: linear-gradient(135deg, #000000 0%, #1A0033 50%, #330033 100%);">
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <span class="text-magenta-400 font-bold">Neon</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2 text-sm text-gray-400">Cyberpunk</div>
+                                </div>
+                                
+                                <div class="theme-option" data-theme="aurora">
+                                    <div class="theme-preview" style="background: linear-gradient(135deg, #001122 0%, #003366 50%, #0066CC 100%);">
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <span class="text-cyan-400 font-bold">Aurora</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2 text-sm text-gray-400">Northern Lights</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Color Customization -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-cyan-400 mb-4">Accent Colors</h3>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Primary Color</label>
+                                    <div class="flex items-center space-x-4">
+                                        <input type="color" id="primary-color" value="#FF00FF" class="color-picker">
+                                        <div>
+                                            <div class="text-sm text-gray-400">Current: <span id="primary-value">#FF00FF</span></div>
+                                            <div class="text-xs text-gray-500">Used for buttons and highlights</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Secondary Color</label>
+                                    <div class="flex items-center space-x-4">
+                                        <input type="color" id="secondary-color" value="#00FFFF" class="color-picker">
+                                        <div>
+                                            <div class="text-sm text-gray-400">Current: <span id="secondary-value">#00FFFF</span></div>
+                                            <div class="text-xs text-gray-500">Used for borders and accents</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Animation Settings -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-cyan-400 mb-4">Animation Preferences</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-medium">Particle Effects</div>
+                                        <div class="text-sm text-gray-400">Floating cosmic particles</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="particles-enabled" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-medium">Text Animations</div>
+                                        <div class="text-sm text-gray-400">Typewriter and reveal effects</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="text-animations" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-medium">Hover Effects</div>
+                                        <div class="text-sm text-gray-400">Interactive element animations</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="hover-effects" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Preview -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-cyan-400 mb-4">Live Preview</h3>
+                            <div class="holographic rounded-lg p-6">
+                                <button class="px-6 py-3 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-lg font-semibold mr-4" id="preview-button-1">
+                                    Sample Button
+                                </button>
+                                <button class="px-6 py-3 holographic rounded-lg font-semibold" id="preview-button-2">
+                                    Secondary Button
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button onclick="applyThemeSettings()" class="w-full py-4 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-lg font-bold text-lg hover:from-magenta-600 hover:to-cyan-600 transition-all transform hover:scale-105 glow-magenta">
+                            Apply Theme Settings
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- API & Model Settings -->
+                <div class="space-y-6">
+                    <!-- API Management -->
+                    <div class="config-card p-6">
+                        <h3 class="orbitron text-xl font-semibold text-magenta-400 mb-4">API Management</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Default Provider</label>
+                                <select id="default-provider" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <option value="deepseek">Deepseek</option>
+                                    <option value="kimi">Kimi K2</option>
+                                    <option value="openai">OpenAI</option>
+                                    <option value="anthropic">Anthropic</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">API Timeout (seconds)</label>
+                                <div class="slider-container">
+                                    <input type="range" id="api-timeout" min="5" max="60" value="30" class="slider">
+                                    <div class="flex justify-between text-sm text-gray-400 mt-2">
+                                        <span>5s</span>
+                                        <span id="timeout-value">30s</span>
+                                        <span>60s</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Retry Attempts</label>
+                                <div class="slider-container">
+                                    <input type="range" id="retry-attempts" min="1" max="5" value="3" class="slider">
+                                    <div class="flex justify-between text-sm text-gray-400 mt-2">
+                                        <span>1</span>
+                                        <span id="retry-value">3</span>
+                                        <span>5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-gray-700">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium">Connection Status</span>
+                                    <span class="api-status status-disconnected" id="api-status">Disconnected</span>
+                                </div>
+                                <button onclick="testAPIConnection()" class="w-full py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors">
+                                    Test Connection
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Model Defaults -->
+                    <div class="config-card p-6">
+                        <h3 class="orbitron text-xl font-semibold text-magenta-400 mb-4">Model Defaults</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Default Temperature</label>
+                                <div class="slider-container">
+                                    <input type="range" id="default-temperature" min="0" max="2" step="0.1" value="0.7" class="slider">
+                                    <div class="flex justify-between text-sm text-gray-400 mt-2">
+                                        <span>0.0</span>
+                                        <span id="temp-default-value">0.7</span>
+                                        <span>2.0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Default Max Tokens</label>
+                                <select id="default-max-tokens" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <option value="512">512</option>
+                                    <option value="1024" selected>1024</option>
+                                    <option value="2048">2048</option>
+                                    <option value="4096">4096</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Response Format</label>
+                                <select id="response-format" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <option value="text">Plain Text</option>
+                                    <option value="markdown">Markdown</option>
+                                    <option value="json">JSON</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data & Privacy -->
+                    <div class="config-card p-6">
+                        <h3 class="orbitron text-xl font-semibold text-magenta-400 mb-4">Data & Privacy</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-medium">Save Conversation History</div>
+                                    <div class="text-sm text-gray-400">Store training sessions locally</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="save-history" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-medium">Anonymous Analytics</div>
+                                    <div class="text-sm text-gray-400">Help improve the platform</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="analytics-enabled" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-medium">Auto-Export Models</div>
+                                    <div class="text-sm text-gray-400">Automatically save trained models</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="auto-export" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-gray-700">
+                                <button onclick="clearAllData()" class="w-full py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm transition-colors">
+                                    Clear All Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mt-12">
+                <button onclick="exportSettings()" class="px-8 py-3 holographic rounded-lg font-semibold hover:bg-white hover:bg-opacity-10 transition-all">
+                    Export Settings
+                </button>
+                <button onclick="importSettings()" class="px-8 py-3 holographic rounded-lg font-semibold hover:bg-white hover:bg-opacity-10 transition-all">
+                    Import Settings
+                </button>
+                <button onclick="resetToDefaults()" class="px-8 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition-all">
+                    Reset to Defaults
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6 text-center">
+            <div class="orbitron text-2xl font-bold text-cyan-400 mb-4">HFRL Integration Hub</div>
+            <div class="text-gray-400 mb-4">Advanced AI Development Through Human Feedback</div>
+            <div class="text-sm text-gray-500">© 2025 HFRL Integration Platform. All rights reserved.</div>
+        </div>
+    </footer>
+    
+    <!-- Hidden file input for import -->
+    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+    
+    <script>
+        // Settings Management
+        class SettingsManager {
+            constructor() {
+                this.settings = this.loadSettings();
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.applyCurrentSettings();
+                this.updatePreview();
+            }
+            
+            loadSettings() {
+                const defaultSettings = {
+                    theme: 'cosmic',
+                    primaryColor: '#FF00FF',
+                    secondaryColor: '#00FFFF',
+                    particlesEnabled: true,
+                    textAnimations: true,
+                    hoverEffects: true,
+                    defaultProvider: 'deepseek',
+                    apiTimeout: 30,
+                    retryAttempts: 3,
+                    defaultTemperature: 0.7,
+                    defaultMaxTokens: 1024,
+                    responseFormat: 'text',
+                    saveHistory: true,
+                    analyticsEnabled: true,
+                    autoExport: false
+                };
+                
+                const saved = localStorage.getItem('hfrl-settings');
+                return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
+            }
+            
+            saveSettings() {
+                localStorage.setItem('hfrl-settings', JSON.stringify(this.settings));
+            }
+            
+            setupEventListeners() {
+                // Theme selection
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        document.querySelectorAll('.theme-preview').forEach(preview => {
+                            preview.classList.remove('active');
+                        });
+                        e.currentTarget.querySelector('.theme-preview').classList.add('active');
+                        this.settings.theme = e.currentTarget.dataset.theme;
+                        this.updatePreview();
+                    });
+                });
+                
+                // Color pickers
+                document.getElementById('primary-color').addEventListener('change', (e) => {
+                    this.settings.primaryColor = e.target.value;
+                    document.getElementById('primary-value').textContent = e.target.value;
+                    this.updatePreview();
+                });
+                
+                document.getElementById('secondary-color').addEventListener('change', (e) => {
+                    this.settings.secondaryColor = e.target.value;
+                    document.getElementById('secondary-value').textContent = e.target.value;
+                    this.updatePreview();
+                });
+                
+                // Sliders
+                document.getElementById('api-timeout').addEventListener('input', (e) => {
+                    this.settings.apiTimeout = parseInt(e.target.value);
+                    document.getElementById('timeout-value').textContent = e.target.value + 's';
+                });
+                
+                document.getElementById('retry-attempts').addEventListener('input', (e) => {
+                    this.settings.retryAttempts = parseInt(e.target.value);
+                    document.getElementById('retry-value').textContent = e.target.value;
+                });
+                
+                document.getElementById('default-temperature').addEventListener('input', (e) => {
+                    this.settings.defaultTemperature = parseFloat(e.target.value);
+                    document.getElementById('temp-default-value').textContent = e.target.value;
+                });
+                
+                // Checkboxes and selects
+                document.getElementById('particles-enabled').addEventListener('change', (e) => {
+                    this.settings.particlesEnabled = e.target.checked;
+                });
+                
+                document.getElementById('text-animations').addEventListener('change', (e) => {
+                    this.settings.textAnimations = e.target.checked;
+                });
+                
+                document.getElementById('hover-effects').addEventListener('change', (e) => {
+                    this.settings.hoverEffects = e.target.checked;
+                });
+                
+                document.getElementById('default-provider').addEventListener('change', (e) => {
+                    this.settings.defaultProvider = e.target.value;
+                });
+                
+                document.getElementById('default-max-tokens').addEventListener('change', (e) => {
+                    this.settings.defaultMaxTokens = parseInt(e.target.value);
+                });
+                
+                document.getElementById('response-format').addEventListener('change', (e) => {
+                    this.settings.responseFormat = e.target.value;
+                });
+                
+                document.getElementById('save-history').addEventListener('change', (e) => {
+                    this.settings.saveHistory = e.target.checked;
+                });
+                
+                document.getElementById('analytics-enabled').addEventListener('change', (e) => {
+                    this.settings.analyticsEnabled = e.target.checked;
+                });
+                
+                document.getElementById('auto-export').addEventListener('change', (e) => {
+                    this.settings.autoExport = e.target.checked;
+                });
+            }
+            
+            applyCurrentSettings() {
+                // Apply current settings to UI elements
+                document.getElementById('primary-color').value = this.settings.primaryColor;
+                document.getElementById('primary-value').textContent = this.settings.primaryColor;
+                document.getElementById('secondary-color').value = this.settings.secondaryColor;
+                document.getElementById('secondary-value').textContent = this.settings.secondaryColor;
+                document.getElementById('api-timeout').value = this.settings.apiTimeout;
+                document.getElementById('timeout-value').textContent = this.settings.apiTimeout + 's';
+                document.getElementById('retry-attempts').value = this.settings.retryAttempts;
+                document.getElementById('retry-value').textContent = this.settings.retryAttempts;
+                document.getElementById('default-temperature').value = this.settings.defaultTemperature;
+                document.getElementById('temp-default-value').textContent = this.settings.defaultTemperature;
+                document.getElementById('default-provider').value = this.settings.defaultProvider;
+                document.getElementById('default-max-tokens').value = this.settings.defaultMaxTokens;
+                document.getElementById('response-format').value = this.settings.responseFormat;
+                document.getElementById('particles-enabled').checked = this.settings.particlesEnabled;
+                document.getElementById('text-animations').checked = this.settings.textAnimations;
+                document.getElementById('hover-effects').checked = this.settings.hoverEffects;
+                document.getElementById('save-history').checked = this.settings.saveHistory;
+                document.getElementById('analytics-enabled').checked = this.settings.analyticsEnabled;
+                document.getElementById('auto-export').checked = this.settings.autoExport;
+                
+                // Set active theme
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    const preview = option.querySelector('.theme-preview');
+                    if (option.dataset.theme === this.settings.theme) {
+                        preview.classList.add('active');
+                    } else {
+                        preview.classList.remove('active');
+                    }
+                });
+            }
+            
+            updatePreview() {
+                // Update preview buttons with current colors
+                const previewButton1 = document.getElementById('preview-button-1');
+                const previewButton2 = document.getElementById('preview-button-2');
+                
+                previewButton1.style.background = `linear-gradient(90deg, ${this.settings.primaryColor}, ${this.settings.secondaryColor})`;
+                previewButton1.style.boxShadow = `0 0 20px ${this.settings.primaryColor}`;
+                
+                // Update CSS custom properties
+                document.documentElement.style.setProperty('--magenta', this.settings.primaryColor);
+                document.documentElement.style.setProperty('--cyan', this.settings.secondaryColor);
+            }
+        }
+        
+        // Global functions
+        function applyThemeSettings() {
+            settingsManager.saveSettings();
+            settingsManager.showNotification('Theme settings applied successfully!', 'success');
+        }
+        
+        function testAPIConnection() {
+            const statusElement = document.getElementById('api-status');
+            statusElement.textContent = 'Testing...';
+            statusElement.className = 'api-status status-testing';
+            
+            setTimeout(() => {
+                const isConnected = Math.random() > 0.3;
+                if (isConnected) {
+                    statusElement.textContent = 'Connected';
+                    statusElement.className = 'api-status status-connected';
+                    settingsManager.showNotification('API connection successful!', 'success');
+                } else {
+                    statusElement.textContent = 'Failed';
+                    statusElement.className = 'api-status status-disconnected';
+                    settingsManager.showNotification('API connection failed. Please check your settings.', 'error');
+                }
+            }, 2000);
+        }
+        
+        function exportSettings() {
+            const dataStr = JSON.stringify(settingsManager.settings, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'hfrl-settings.json';
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            settingsManager.showNotification('Settings exported successfully!', 'success');
+        }
+        
+        function importSettings() {
+            document.getElementById('import-file-input').click();
+        }
+        
+        function resetToDefaults() {
+            if (confirm('Are you sure you want to reset all settings to defaults? This cannot be undone.')) {
+                localStorage.removeItem('hfrl-settings');
+                location.reload();
+            }
+        }
+        
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This will remove all settings, history, and configurations.')) {
+                localStorage.clear();
+                settingsManager.showNotification('All data cleared successfully!', 'success');
+            }
+        }
+        
+        // Initialize settings manager
+        let settingsManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            settingsManager = new SettingsManager();
+            
+            // Setup import file listener
+            document.getElementById('import-file-input').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const importedSettings = JSON.parse(e.target.result);
+                            Object.assign(settingsManager.settings, importedSettings);
+                            settingsManager.saveSettings();
+                            settingsManager.applyCurrentSettings();
+                            settingsManager.updatePreview();
+                            settingsManager.showNotification('Settings imported successfully!', 'success');
+                        } catch (error) {
+                            settingsManager.showNotification('Error importing settings. Please check the file format.', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
