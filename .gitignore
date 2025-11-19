@@ -1,0 +1,305 @@
+# HFRL Integration Hub - Git Ignore File
+
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+.env.local
+
+# ============================================
+# Environment Variables & Secrets
+# ============================================
+.env
+*.env
+!.env.example
+.env.production
+.env.development
+.env.test
+
+# API Keys and Secrets
+secrets/
+*.key
+*.pem
+*.crt
+*.p12
+
+# ============================================
+# Database
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
+
+# PostgreSQL
+*.sql
+*.dump
+
+# MongoDB
+*.bson
+
+# ============================================
+# Logs
+# ============================================
+*.log
+logs/
+log/
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ============================================
+# IDE & Editors
+# ============================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# JetBrains
+.idea/
+*.iml
+out/
+
+# ============================================
+# Operating System
+# ============================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+
+# ============================================
+# Testing
+# ============================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+nosetests.xml
+test-results/
+junit.xml
+
+# ============================================
+# Build & Distribution
+# ============================================
+dist/
+build/
+*.egg-info/
+.eggs/
+*.whl
+
+# ============================================
+# Node.js (if using npm/yarn for frontend tools)
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.npm
+.yarn-integrity
+
+# ============================================
+# Frontend Build
+# ============================================
+# Compiled files
+*.min.js
+*.min.css
+*.map
+
+# Build directories
+/dist/
+/build/
+/.next/
+/out/
+
+# ============================================
+# Temporary Files
+# ============================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*~
+
+# ============================================
+# Documentation Build
+# ============================================
+docs/_build/
+site/
+.mkdocs_cache/
+
+# ============================================
+# Jupyter Notebooks
+# ============================================
+.ipynb_checkpoints
+*.ipynb
+
+# ============================================
+# Docker
+# ============================================
+docker-compose.override.yml
+.dockerignore
+
+# ============================================
+# CI/CD
+# ============================================
+.github/workflows/*.local.yml
+
+# ============================================
+# Misc
+# ============================================
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Compressed files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Cache
+.cache/
+*.cache
+
+# Local configuration
+local_settings.py
+config.local.js
+settings.local.json
+
+# User-specific files
+.user
+*.user
+
+# ============================================
+# Project Specific
+# ============================================
+# Local data files
+/data/
+/uploads/
+/downloads/
+
+# Generated files
+/generated/
+/output/
+
+# Temporary storage
+/tmp/
+/temp/
+
+# User uploads (if any)
+/media/
+/static/uploads/
+
+# Session files
+sessions/
+*.session
+
+# ============================================
+# Documentation Files (exclude all except README.md)
+# ============================================
+QUICKSTART.md
+IMPROVEMENTS.md
+CONTRIBUTING.md
+LICENSE
+PRE-PUSH-CHECKLIST.md
+.github-setup.md
+SECURITY.md
+CHANGELOG.md
+
+# ============================================
+# Keep These Files
+# ============================================
+# Keep example files
+!.env.example
+!config.example.json
+!settings.example.py
+
+# Keep empty directories with .gitkeep
+!.gitkeep
+
+# Keep only main README files
+!README.md
+!backend/README.md
