@@ -263,11 +263,11 @@ class HFRLApp {
     }
     
     async testConnection() {
-        const apiKey = document.getElementById('api-key').value;
         const provider = document.getElementById('model-provider').value;
+        const apiKey = localStorage.getItem(`${provider}_api_key`);
         
         if (!apiKey) {
-            this.showNotification('Please enter an API key', 'error');
+            this.showNotification(`Please configure ${provider} API key in Settings first`, 'error');
             return;
         }
         
@@ -279,11 +279,22 @@ class HFRLApp {
             </div>
         `;
         
-        // Simulate API connection test
-        setTimeout(() => {
-            const isConnected = Math.random() > 0.2; // 80% success rate
+        try {
+            // Call backend API to test connection
+            const response = await fetch('http://localhost:8000/api/models/test-connection', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    provider: provider,
+                    api_key: apiKey
+                })
+            });
             
-            if (isConnected) {
+            const data = await response.json();
+            
+            if (data.success) {
                 statusElement.innerHTML = `
                     <span class="status-indicator status-connected"></span>
                     <span class="text-green-400">Connected</span>
@@ -294,9 +305,16 @@ class HFRLApp {
                     <span class="status-indicator status-disconnected"></span>
                     <span class="text-red-400">Failed</span>
                 `;
-                this.showNotification('Connection failed. Check API key.', 'error');
+                this.showNotification(`Connection failed: ${data.message}`, 'error');
             }
-        }, 2000);
+        } catch (error) {
+            statusElement.innerHTML = `
+                <span class="status-indicator status-disconnected"></span>
+                <span class="text-red-400">Error</span>
+            `;
+            this.showNotification('Connection test failed. Check backend server.', 'error');
+            console.error('Connection test error:', error);
+        }
     }
     
     setupFileUpload() {
@@ -351,10 +369,67 @@ class HFRLApp {
             return;
         }
         
+        if (!this.currentModel) {
+            this.showNotification('Please select a model first', 'error');
+            return;
+        }
+        
+        // Get API key from localStorage
+        const apiKey = localStorage.getItem(`${this.currentModel.provider}_api_key`);
+        if (!apiKey) {
+            this.showNotification(`Please configure ${this.currentModel.provider} API key in Settings`, 'error');
+            return;
+        }
+        
         this.isGenerating = true;
         this.showGenerationProgress();
         
-        // Simulate AI generation
+        try {
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const maxTokens = parseInt(document.getElementById('max-tokens').value);
+            
+            // Call backend API
+            const response = await fetch('http://localhost:8000/api/models/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': apiKey
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    provider: this.currentModel.provider,
+                    model: this.currentModel.id,
+                    temperature: temperature,
+                    max_tokens: maxTokens
+                })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Generation failed');
+            }
+            
+            const data = await response.json();
+            this.updateProgress(100);
+            this.displayResponse(data.content);
+            this.isGenerating = false;
+            
+        } catch (error) {
+            this.isGenerating = false;
+            this.showNotification(`Generation failed: ${error.message}`, 'error');
+            console.error('Generation error:', error);
+            document.getElementById('generation-progress').classList.add('hidden');
+            
+            // Fallback to mock data if backend is not available
+            this.generateMockContent();
+        }
+    }
+    
+    generateMockContent() {
+        this.isGenerating = true;
+        this.showGenerationProgress();
+        
+        // Simulate AI generation with mock data
         const responses = [
             `Based on your request, here's a comprehensive analysis of the character dialogue patterns:\n\nThe protagonist exhibits a complex emotional arc through their speech patterns. In the opening scenes, their dialogue is characterized by short, fragmented sentences that reflect their internal turmoil. As the narrative progresses, we observe a shift toward more complex syntactic structures, indicating character growth and emotional stability.\n\nKey dialogue features:\n• Initial hesitation patterns ("I... I don't know if...")
 • Gradual confidence building ("I believe we should consider...")
@@ -510,7 +585,7 @@ async function processUserFeedback(feedbackData) {
         });
     }
     
-    submitFeedback() {
+    async submitFeedback() {
         const comments = document.getElementById('feedback-comments').value;
         const learningRate = document.getElementById('learning-rate').value;
         
@@ -520,23 +595,39 @@ async function processUserFeedback(feedbackData) {
         }
         
         const feedbackData = {
-            rating: this.currentRating,
+            rating: this.currentRating || 3,
             comments: comments,
-            learningRate: learningRate,
-            timestamp: new Date(),
-            sessionId: Date.now()
+            learning_rate: learningRate === 'low' ? 0.0001 : learningRate === 'high' ? 0.01 : 0.001,
+            session_id: this.currentSessionId || `session_${Date.now()}`
         };
         
-        this.feedbackData.push(feedbackData);
-        
-        // Simulate training process
-        this.showNotification('Training model with feedback...', 'info');
-        
-        setTimeout(() => {
-            this.showNotification('Model updated successfully!', 'success');
+        try {
+            // Send feedback to backend
+            const response = await fetch('http://localhost:8000/api/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(feedbackData)
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to submit feedback');
+            }
+            
+            const data = await response.json();
+            this.feedbackData.push(data);
+            
+            this.showNotification('Feedback submitted successfully!', 'success');
             this.updatePerformanceMetrics();
             this.clearFeedbackForm();
-        }, 3000);
+            
+        } catch (error) {
+            this.showNotification('Failed to submit feedback. Saving locally...', 'warning');
+            this.feedbackData.push(feedbackData);
+            this.clearFeedbackForm();
+            console.error('Feedback submission error:', error);
+        }
     }
     
     clearFeedbackForm() {

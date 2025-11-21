@@ -1,213 +1,256 @@
 # HFRL Integration Hub
 
-A sophisticated Human Feedback Reinforcement Learning platform for AI development with a stunning sci-fi aesthetic.
+Human Feedback Reinforcement Learning Platform - A comprehensive web application for training and improving AI models through human feedback.
 
-## 🚀 Features
+## Overview
+
+HFRL Integration Hub provides an intuitive interface for developers and non-technical users to interact with AI models, provide feedback, and track improvements over time. The platform supports multiple AI providers including OpenAI, Anthropic, Deepseek, and Kimi K2.
+
+## Features
 
 ### Core Functionality
-- **Multi-Provider AI Integration**: Support for Deepseek, Kimi K2, OpenAI, and Anthropic
-- **Real-time Feedback System**: Inline commenting and quality rating for AI responses
-- **Advanced Analytics**: Performance tracking with interactive charts and metrics
-- **Collaborative Training**: Multi-user feedback integration for team-based model improvement
-- **Visual Configuration**: User-friendly settings panel for non-technical users
+- **Multi-Provider Support**: Connect to OpenAI, Anthropic, Deepseek, and Kimi K2
+- **Interactive Workspace**: Generate content with customizable parameters
+- **Feedback System**: Rate and comment on AI responses
+- **Analytics Dashboard**: Track performance metrics and improvements
+- **Visual Customization**: Multiple themes and color schemes
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
 
-### Sci-Fi Aesthetic
-- **Cosmic Design**: Deep space backgrounds with particle effects
-- **Neon Color Scheme**: Magenta and cyan accents with holographic UI elements
-- **Smooth Animations**: Powered by Anime.js and p5.js particle systems
-- **Interactive Elements**: Hover effects, glow animations, and dynamic lighting
+### Technical Features
+- RESTful API backend with FastAPI
+- Real-time feedback integration
+- Comprehensive error handling
+- Request logging and monitoring
+- Input validation and security
+- CORS support for cross-origin requests
 
-### Technical Highlights
-- **Responsive Design**: Mobile-first approach with adaptive layouts
-- **Local Storage**: Client-side data persistence for privacy and speed
-- **Progressive Enhancement**: Works without JavaScript for basic functionality
-- **Accessibility**: Keyboard navigation and screen reader support
+## Quick Start
 
-## 📁 File Structure
+### Frontend Setup
+
+1. Open `index.html` in a modern web browser, or use a local server:
+```bash
+# Using Python
+python -m http.server 8080
+
+# Using Node.js
+npx http-server -p 8080
+```
+
+2. Navigate to `http://localhost:8080`
+
+### Backend Setup
+
+1. Navigate to the backend directory:
+```bash
+cd backend
+```
+
+2. Create and activate virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Configure environment:
+```bash
+cp .env.example .env
+# Edit .env and add your API keys
+```
+
+5. Run the server:
+```bash
+python main.py
+```
+
+The API will be available at `http://localhost:8000`
+
+## Project Structure
 
 ```
-HFRL Integration Hub/
-├── index.html              # Main application interface
-├── settings.html           # Configuration and customization
-├── analytics.html          # Performance analytics dashboard
-├── documentation.html      # Comprehensive user guide
-├── main.js                 # Core application logic
-├── resources/              # Visual assets and images
-│   ├── hero-ai-brain.png   # AI neural network visualization
-│   ├── control-panel.png   # Interface mockup
-│   ├── cosmic-bg.png       # Background texture
-│   └── ai-avatar.png       # AI model representation
+hfrl-integration-hub/
+├── index.html              # Main workspace page
+├── analytics.html          # Analytics dashboard
+├── documentation.html      # Documentation page
+├── settings.html           # Settings and configuration
+├── main.js                 # Frontend JavaScript
+├── resources/              # Images and assets
+├── backend/                # FastAPI backend
+│   ├── app/
+│   │   ├── routers/       # API endpoints
+│   │   ├── services/      # Business logic
+│   │   ├── config.py      # Configuration
+│   │   ├── schemas.py     # Data models
+│   │   └── exceptions.py  # Custom exceptions
+│   ├── main.py            # Application entry
+│   └── requirements.txt   # Python dependencies
 └── README.md              # This file
 ```
 
-## 🛠 Getting Started
+## Usage
 
-### Web Version (Recommended)
-The web version is immediately accessible and requires no installation:
+### 1. Configure API Keys
 
-1. **Access the Application**: Open `index.html` in any modern web browser
-2. **Configure API Keys**: Navigate to Settings and enter your AI provider credentials
-3. **Start Training**: Begin using the HFRL workspace for model improvement
+Go to Settings page and enter your API keys for the providers you want to use:
+- OpenAI API Key
+- Anthropic API Key
+- Deepseek API Key
+- Kimi K2 API Key
 
-### Local Development
+### 2. Test Connection
 
-1. **Clone or Download**: Get the complete project files
-2. **Serve Locally**: Use any HTTP server
-   ```bash
-   python -m http.server 8000
-   # or
-   npx serve .
-   ```
-3. **Access**: Open `http://localhost:8000` in your browser
+Use the "Test Connection" button to verify your API credentials are working.
 
-### API Configuration
+### 3. Generate Content
 
-#### Supported Providers
-- **Deepseek**: Visit [platform.deepseek.com](https://platform.deepseek.com)
-- **Kimi K2**: Access [kimi.moonshot.cn](https://kimi.moonshot.cn)
-- **OpenAI**: Get keys from [platform.openai.com](https://platform.openai.com)
-- **Anthropic**: Obtain from [anthropic.com](https://anthropic.com)
+1. Select a model provider and model
+2. Choose a task type (dialogue, code, story, etc.)
+3. Enter your prompt
+4. Adjust temperature and max tokens
+5. Click "Generate Content"
 
-#### Security Note
-API keys are stored locally in your browser's localStorage and never transmitted to external servers.
+### 4. Provide Feedback
 
-## 📖 How to Use
+1. Rate the response (1-5 stars)
+2. Add comments about quality
+3. Select learning rate
+4. Click "Apply Feedback"
 
-### 1. Connect Your Model
-- Navigate to the Settings page
-- Enter your API credentials for your preferred AI provider
-- Test the connection to ensure everything works
+### 5. Track Progress
 
-### 2. Create a Training Task
-- Return to the main workspace
-- Select your task type (dialogue, code, story, etc.)
-- Upload reference materials if needed
-- Write a clear prompt describing what you want
+Visit the Analytics page to see:
+- Average quality scores
+- Improvement rates
+- Training statistics
+- Session history
 
-### 3. Generate and Provide Feedback
-- Generate AI responses with customizable parameters
-- Rate the quality using the 5-star system
-- Add detailed comments explaining improvements
-- Use inline feedback for specific word/phrase suggestions
+## API Documentation
 
-### 4. Track Progress
-- Visit the Analytics page to see performance metrics
-- Monitor improvement trends over time
-- Compare different models and approaches
-- Export data for further analysis
+Once the backend is running, visit:
+- Swagger UI: http://localhost:8000/api/docs
+- ReDoc: http://localhost:8000/api/redoc
 
-## 🎨 Customization
+### Key Endpoints
 
-### Visual Themes
-- **Cosmic**: Deep space with subtle particle effects
-- **Neon**: Cyberpunk aesthetic with bright accents
-- **Aurora**: Northern lights-inspired gradient backgrounds
+```
+POST /api/models/generate       - Generate AI content
+POST /api/models/test-connection - Test API connection
+POST /api/feedback              - Submit feedback
+GET  /api/analytics             - Get analytics data
+GET  /api/settings              - Get settings
+PUT  /api/settings              - Update settings
+```
 
-### Color Schemes
-- Primary Color: Default magenta (#FF00FF)
-- Secondary Color: Default cyan (#00FFFF)
-- Fully customizable through the Settings panel
+## Configuration
 
-### Animation Preferences
-- Toggle particle effects, text animations, and hover effects
-- Adjust performance settings for slower devices
+### Environment Variables
 
-## 📊 Analytics Features
+Create a `.env` file in the backend directory:
 
-### Key Metrics
-- **Average Quality Score**: Overall performance rating
-- **Improvement Rate**: Speed of model enhancement
-- **Response Time**: Generation efficiency
-- **Feedback Volume**: Training engagement
+```env
+# API Keys
+OPENAI_API_KEY=your_key_here
+ANTHROPIC_API_KEY=your_key_here
+DEEPSEEK_API_KEY=your_key_here
+KIMI_API_KEY=your_key_here
 
-### Visualizations
-- Quality progression over time
-- Feedback distribution analysis
-- Model performance comparison
-- Training efficiency metrics
+# Application Settings
+DEBUG=False
+SECRET_KEY=your-secret-key
+RATE_LIMIT_PER_MINUTE=60
+REQUEST_TIMEOUT=60
+```
 
-## 🔧 Advanced Features
+### CORS Configuration
 
-### Batch Processing
-Process multiple prompts simultaneously with automated feedback evaluation.
+Edit `backend/app/config.py` to add allowed origins:
 
-### Export Capabilities
-- Settings configuration export/import
-- Session data export in JSON format
-- Performance reports generation
+```python
+CORS_ORIGINS: List[str] = [
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "https://yourdomain.com"
+]
+```
 
-### Collaborative Features
-- Multi-user feedback integration
-- Shared model configurations
-- Team-based training sessions
+## Security Best Practices
 
-## 🚨 Troubleshooting
+1. **Never commit API keys** - Use environment variables
+2. **Use HTTPS in production** - Encrypt data in transit
+3. **Implement rate limiting** - Prevent abuse
+4. **Validate all inputs** - Prevent injection attacks
+5. **Keep dependencies updated** - Patch security vulnerabilities
+6. **Use strong secrets** - Generate secure SECRET_KEY
+7. **Enable CORS selectively** - Only allow trusted origins
 
-### Common Issues
+## Troubleshooting
 
-#### API Connection Failed
-- Verify your API key is correct and active
-- Check your internet connection
-- Ensure the provider service is operational
+### Backend Won't Start
+- Check Python version (3.8+)
+- Verify all dependencies are installed
+- Check if port 8000 is available
+- Review error logs
 
-#### Slow Performance
-- Reduce particle effects in Settings
-- Lower animation quality
-- Close other browser tabs
+### API Connection Fails
+- Verify API keys are correct
+- Check internet connection
+- Ensure backend server is running
+- Review CORS settings
 
-#### Data Not Saving
-- Check browser localStorage permissions
-- Ensure sufficient disk space
-- Try clearing browser cache
+### Frontend Not Loading
+- Use a local server (not file://)
+- Check browser console for errors
+- Verify all CDN resources load
+- Clear browser cache
 
-### Getting Help
-- Check the Documentation page for detailed guides
-- Review code examples in the Examples section
-- Contact support through the platform
+## Browser Support
 
-## 🔒 Privacy & Security
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
 
-- **Local Storage**: All data stored locally in your browser
-- **No Server Transmission**: API keys never leave your device
-- **Privacy First**: No tracking or analytics without explicit consent
-- **Secure by Design**: Follows security best practices
+## Contributing
 
-## 🌟 Best Practices
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-### Effective Feedback
-- Be specific about improvements
-- Use consistent rating criteria
-- Provide examples when possible
-- Focus on both strengths and weaknesses
+## License
 
-### Model Training
-- Start with conservative learning rates
-- Use diverse prompt types
-- Monitor performance metrics regularly
-- Collaborate with team members
+MIT License - See LICENSE file for details
 
-### Performance Optimization
-- Customize visual effects for your device
-- Use appropriate model parameters
-- Batch process similar tasks
-- Regular data cleanup
+## Support
 
-## 🚀 Future Enhancements
+For issues and questions:
+- Check the Documentation page
+- Review API documentation
+- Check browser console for errors
+- Review backend logs
 
-- **Advanced Analytics**: Machine learning insights
-- **Team Collaboration**: Real-time collaborative training
-- **Model Comparison**: Side-by-side performance analysis
-- **Automated Testing**: Self-improving evaluation systems
-- **Integration APIs**: Connect with external tools and platforms
+## Roadmap
 
-## 📄 License
+- [ ] Database integration (PostgreSQL/MongoDB)
+- [ ] User authentication and authorization
+- [ ] Team collaboration features
+- [ ] Model fine-tuning capabilities
+- [ ] Advanced analytics and reporting
+- [ ] Export/import training data
+- [ ] Webhook integrations
+- [ ] Mobile app
 
-This project is created for demonstration purposes. All external libraries and assets maintain their respective licenses.
+## Acknowledgments
 
-## 🤝 Contributing
-
-This is a demonstration project, but feedback and suggestions are welcome for future improvements.
-
----
-
-**HFRL Integration Hub** - Transforming AI development through human feedback and reinforcement learning.
+Built with:
+- FastAPI - Modern Python web framework
+- Tailwind CSS - Utility-first CSS framework
+- ECharts - Powerful charting library
+- Anime.js - Animation library
+- p5.js - Creative coding library
