@@ -263,11 +263,11 @@ class HFRLApp {
     }
     
     async testConnection() {
-        const apiKey = document.getElementById('api-key').value;
         const provider = document.getElementById('model-provider').value;
+        const apiKey = localStorage.getItem(`${provider}_api_key`);
         
         if (!apiKey) {
-            this.showNotification('Please enter an API key', 'error');
+            this.showNotification(`Please configure ${provider} API key in Settings first`, 'error');
             return;
         }
         
@@ -374,20 +374,26 @@ class HFRLApp {
             return;
         }
         
+        // Get API key from localStorage
+        const apiKey = localStorage.getItem(`${this.currentModel.provider}_api_key`);
+        if (!apiKey) {
+            this.showNotification(`Please configure ${this.currentModel.provider} API key in Settings`, 'error');
+            return;
+        }
+        
         this.isGenerating = true;
         this.showGenerationProgress();
         
         try {
             const temperature = parseFloat(document.getElementById('temperature').value);
             const maxTokens = parseInt(document.getElementById('max-tokens').value);
-            const apiKey = document.getElementById('api-key').value;
             
             // Call backend API
             const response = await fetch('http://localhost:8000/api/models/generate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-API-Key': apiKey || ''
+                    'X-API-Key': apiKey
                 },
                 body: JSON.stringify({
                     prompt: prompt,
@@ -413,10 +419,8 @@ class HFRLApp {
             this.showNotification(`Generation failed: ${error.message}`, 'error');
             console.error('Generation error:', error);
             document.getElementById('generation-progress').classList.add('hidden');
-        }
-        
-        // Fallback to mock data if backend is not available
-        if (!this.isGenerating) {
+            
+            // Fallback to mock data if backend is not available
             this.generateMockContent();
         }
     }

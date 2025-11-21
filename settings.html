@@ -328,9 +328,55 @@
                 <div class="space-y-6">
                     <!-- API Management -->
                     <div class="config-card p-6">
-                        <h3 class="orbitron text-xl font-semibold text-magenta-400 mb-4">API Management</h3>
+                        <h3 class="orbitron text-xl font-semibold text-magenta-400 mb-4">API Keys Configuration</h3>
                         
                         <div class="space-y-4">
+                            <!-- OpenAI -->
+                            <div>
+                                <label class="block text-sm font-medium mb-2">OpenAI API Key</label>
+                                <div class="flex space-x-2">
+                                    <input type="password" id="openai-api-key" placeholder="sk-..." class="flex-1 p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <button onclick="testProviderConnection('openai')" class="px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors">Test</button>
+                                </div>
+                                <div class="text-xs text-gray-400 mt-1">Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" class="text-cyan-400 hover:text-cyan-300">OpenAI Platform</a></div>
+                            </div>
+                            
+                            <!-- Anthropic -->
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Anthropic API Key</label>
+                                <div class="flex space-x-2">
+                                    <input type="password" id="anthropic-api-key" placeholder="sk-ant-..." class="flex-1 p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <button onclick="testProviderConnection('anthropic')" class="px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors">Test</button>
+                                </div>
+                                <div class="text-xs text-gray-400 mt-1">Get your key from <a href="https://console.anthropic.com/" target="_blank" class="text-cyan-400 hover:text-cyan-300">Anthropic Console</a></div>
+                            </div>
+                            
+                            <!-- Deepseek -->
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Deepseek API Key</label>
+                                <div class="flex space-x-2">
+                                    <input type="password" id="deepseek-api-key" placeholder="sk-..." class="flex-1 p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <button onclick="testProviderConnection('deepseek')" class="px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors">Test</button>
+                                </div>
+                                <div class="text-xs text-gray-400 mt-1">Get your key from <a href="https://platform.deepseek.com/" target="_blank" class="text-cyan-400 hover:text-cyan-300">Deepseek Platform</a></div>
+                            </div>
+                            
+                            <!-- Kimi -->
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Kimi K2 API Key</label>
+                                <div class="flex space-x-2">
+                                    <input type="password" id="kimi-api-key" placeholder="..." class="flex-1 p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
+                                    <button onclick="testProviderConnection('kimi')" class="px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors">Test</button>
+                                </div>
+                                <div class="text-xs text-gray-400 mt-1">Get your key from <a href="https://platform.moonshot.cn/" target="_blank" class="text-cyan-400 hover:text-cyan-300">Kimi Platform</a></div>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-gray-700">
+                                <button onclick="saveAllAPIKeys()" class="w-full py-3 bg-gradient-to-r from-magenta-500 to-cyan-500 rounded-lg font-semibold hover:from-magenta-600 hover:to-cyan-600 transition-all">
+                                    Save All API Keys
+                                </button>
+                            </div>
+                            
                             <div>
                                 <label class="block text-sm font-medium mb-2">Default Provider</label>
                                 <select id="default-provider" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-cyan-400 focus:outline-none">
@@ -366,13 +412,9 @@
                             </div>
                             
                             <div class="pt-4 border-t border-gray-700">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-medium">Connection Status</span>
-                                    <span class="api-status status-disconnected" id="api-status">Disconnected</span>
+                                <div class="text-sm text-gray-400">
+                                    <strong>Note:</strong> API keys are stored securely in your browser's local storage and are never sent to our servers. They are only used to communicate directly with AI providers.
                                 </div>
-                                <button onclick="testAPIConnection()" class="w-full py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors">
-                                    Test Connection
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -664,23 +706,75 @@
             settingsManager.showNotification('Theme settings applied successfully!', 'success');
         }
         
-        function testAPIConnection() {
-            const statusElement = document.getElementById('api-status');
-            statusElement.textContent = 'Testing...';
-            statusElement.className = 'api-status status-testing';
+        async function testProviderConnection(provider) {
+            const apiKeyInput = document.getElementById(`${provider}-api-key`);
+            const apiKey = apiKeyInput ? apiKeyInput.value.trim() : '';
             
-            setTimeout(() => {
-                const isConnected = Math.random() > 0.3;
-                if (isConnected) {
-                    statusElement.textContent = 'Connected';
-                    statusElement.className = 'api-status status-connected';
-                    settingsManager.showNotification('API connection successful!', 'success');
+            if (!apiKey) {
+                settingsManager.showNotification('Please enter an API key first', 'error');
+                return;
+            }
+            
+            settingsManager.showNotification(`Testing ${provider} connection...`, 'info');
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/models/test-connection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        provider: provider,
+                        api_key: apiKey
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    settingsManager.showNotification(`${provider} connection successful!`, 'success');
+                    localStorage.setItem(`${provider}_api_key`, apiKey);
                 } else {
-                    statusElement.textContent = 'Failed';
-                    statusElement.className = 'api-status status-disconnected';
-                    settingsManager.showNotification('API connection failed. Please check your settings.', 'error');
+                    settingsManager.showNotification(`${provider} connection failed: ${data.message}`, 'error');
                 }
-            }, 2000);
+            } catch (error) {
+                settingsManager.showNotification(`Connection test failed: ${error.message}`, 'error');
+                console.error('Connection test error:', error);
+            }
+        }
+        
+        function saveAllAPIKeys() {
+            const providers = ['openai', 'anthropic', 'deepseek', 'kimi'];
+            let savedCount = 0;
+            
+            providers.forEach(provider => {
+                const apiKeyInput = document.getElementById(`${provider}-api-key`);
+                if (apiKeyInput) {
+                    const apiKey = apiKeyInput.value.trim();
+                    if (apiKey) {
+                        localStorage.setItem(`${provider}_api_key`, apiKey);
+                        savedCount++;
+                    }
+                }
+            });
+            
+            if (savedCount > 0) {
+                settingsManager.showNotification(`Saved ${savedCount} API key(s) successfully!`, 'success');
+            } else {
+                settingsManager.showNotification('No API keys to save', 'warning');
+            }
+        }
+        
+        function loadSavedAPIKeys() {
+            const providers = ['openai', 'anthropic', 'deepseek', 'kimi'];
+            
+            providers.forEach(provider => {
+                const savedKey = localStorage.getItem(`${provider}_api_key`);
+                const apiKeyInput = document.getElementById(`${provider}-api-key`);
+                if (savedKey && apiKeyInput) {
+                    apiKeyInput.value = savedKey;
+                }
+            });
         }
         
         function exportSettings() {
@@ -719,6 +813,7 @@
         let settingsManager;
         document.addEventListener('DOMContentLoaded', () => {
             settingsManager = new SettingsManager();
+            loadSavedAPIKeys();
             
             // Setup import file listener
             document.getElementById('import-file-input').addEventListener('change', (e) => {

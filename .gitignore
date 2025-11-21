@@ -288,6 +288,10 @@ PRE-PUSH-CHECKLIST.md
 .github-setup.md
 SECURITY.md
 CHANGELOG.md
+UPDATES-SUMMARY.md
+PUSH-TO-GITHUB.md
+DEPLOYMENT.md
+deploy.sh
 
 # ============================================
 # Keep These Files
