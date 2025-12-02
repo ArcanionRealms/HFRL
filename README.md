@@ -26,49 +26,40 @@ HFRL Integration Hub provides an intuitive interface for developers and non-tech
 
 ## Quick Start
 
-### Frontend Setup
+### Local Development
 
-1. Open `index.html` in a modern web browser, or use a local server:
+See [QUICKSTART.md](QUICKSTART.md) for detailed 5-minute setup guide.
+
+**Quick commands:**
 ```bash
-# Using Python
-python -m http.server 8080
-
-# Using Node.js
-npx http-server -p 8080
-```
-
-2. Navigate to `http://localhost:8080`
-
-### Backend Setup
-
-1. Navigate to the backend directory:
-```bash
+# Backend
 cd backend
-```
-
-2. Create and activate virtual environment:
-```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
+source venv/bin/activate
 pip install -r requirements.txt
-```
-
-4. Configure environment:
-```bash
-cp .env.example .env
-# Edit .env and add your API keys
-```
-
-5. Run the server:
-```bash
 python main.py
+
+# Frontend (new terminal)
+python -m http.server 8080
 ```
 
-The API will be available at `http://localhost:8000`
+### Deploy to Production
+
+**Recommended: Vercel + Render (Free tier available)**
+
+See [DEPLOY-VERCEL-RENDER.md](DEPLOY-VERCEL-RENDER.md) for complete step-by-step guide.
+
+**Quick deploy:**
+1. Push code to GitHub
+2. Deploy backend on Render (5 min)
+3. Deploy frontend on Vercel (2 min)
+4. Update CORS and API URLs (2 min)
+5. Done! 🎉
+
+**Other options:**
+- [DEPLOYMENT.md](DEPLOYMENT.md) - All deployment options
+- [QUICK-DEPLOY-GUIDE.md](QUICK-DEPLOY-GUIDE.md) - 5-minute reference
+- [deploy.sh](deploy.sh) - Automated deployment script
 
 ## Project Structure
 
@@ -94,36 +85,38 @@ hfrl-integration-hub/
 
 ## Usage
 
-### 1. Configure API Keys
+### 1. Configure API Keys (One-time setup)
 
-Go to Settings page and enter your API keys for the providers you want to use:
-- OpenAI API Key
-- Anthropic API Key
-- Deepseek API Key
-- Kimi K2 API Key
+1. Go to **Settings** page
+2. Enter your API keys for the providers you want to use:
+   - OpenAI API Key ([Get key](https://platform.openai.com/api-keys))
+   - Anthropic API Key ([Get key](https://console.anthropic.com/))
+   - Deepseek API Key ([Get key](https://platform.deepseek.com/))
+   - Kimi K2 API Key ([Get key](https://platform.moonshot.cn/))
+3. Click **"Test"** for each provider to verify
+4. Click **"Save All API Keys"**
 
-### 2. Test Connection
+**Note**: API keys are stored securely in your browser's localStorage and never sent to our servers.
 
-Use the "Test Connection" button to verify your API credentials are working.
+### 2. Generate Content
 
-### 3. Generate Content
+1. Go to **Workspace** (home page)
+2. Select a model provider and model
+3. Choose a task type (dialogue, code, story, etc.)
+4. Enter your prompt
+5. Adjust temperature and max tokens
+6. Click **"Generate Content"**
 
-1. Select a model provider and model
-2. Choose a task type (dialogue, code, story, etc.)
-3. Enter your prompt
-4. Adjust temperature and max tokens
-5. Click "Generate Content"
-
-### 4. Provide Feedback
+### 3. Provide Feedback
 
 1. Rate the response (1-5 stars)
 2. Add comments about quality
 3. Select learning rate
-4. Click "Apply Feedback"
+4. Click **"Apply Feedback"**
 
-### 5. Track Progress
+### 4. Track Progress
 
-Visit the Analytics page to see:
+Visit the **Analytics** page to see:
 - Average quality scores
 - Improvement rates
 - Training statistics

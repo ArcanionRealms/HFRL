@@ -56,6 +56,40 @@ class HFRLApp {
         this.initializeCharts();
         this.setupFileUpload();
         this.loadMockData();
+        this.displayAPIKeyStatus();
+    }
+    
+    displayAPIKeyStatus() {
+        const statusContainer = document.getElementById('api-keys-status');
+        if (!statusContainer) return;
+        
+        console.log('Checking API key status from localStorage...');
+        
+        const providers = [
+            { id: 'openai', name: 'OpenAI' },
+            { id: 'anthropic', name: 'Anthropic' },
+            { id: 'deepseek', name: 'Deepseek' },
+            { id: 'kimi', name: 'Kimi K2' }
+        ];
+        
+        let html = '';
+        providers.forEach(provider => {
+            const apiKey = localStorage.getItem(`${provider.id}_api_key`);
+            const hasKey = apiKey && apiKey.length > 0;
+            
+            console.log(`${provider.id}_api_key: ${hasKey ? 'found (' + apiKey.length + ' chars)' : 'not found'}`);
+            
+            const statusIcon = hasKey ? '✓' : '✗';
+            const statusColor = hasKey ? 'text-green-400' : 'text-red-400';
+            const statusText = hasKey ? 'Configured' : 'Not configured';
+            
+            html += `<div class="flex items-center justify-between">
+                <span>${provider.name}:</span>
+                <span class="${statusColor}">${statusIcon} ${statusText}</span>
+            </div>`;
+        });
+        
+        statusContainer.innerHTML = html;
     }
     
     setupParticleBackground() {

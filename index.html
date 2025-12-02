@@ -265,7 +265,16 @@
                             </div>
                             
                             <div class="text-sm text-gray-400 p-3 bg-gray-800 rounded-lg border border-gray-600">
-                                <strong>Note:</strong> Configure your API keys in <a href="settings.html" class="text-cyan-400 hover:text-cyan-300">Settings</a> before using models.
+                                <div class="flex items-center justify-between mb-2">
+                                    <strong>API Keys Status:</strong>
+                                    <button onclick="app.displayAPIKeyStatus()" class="text-xs text-cyan-400 hover:text-cyan-300">↻ Refresh</button>
+                                </div>
+                                <div id="api-keys-status" class="space-y-1">
+                                    <!-- Will be populated by JavaScript -->
+                                </div>
+                                <div class="mt-3 pt-2 border-t border-gray-700">
+                                    <a href="settings.html" class="text-cyan-400 hover:text-cyan-300">→ Configure API Keys in Settings</a>
+                                </div>
                             </div>
                             
                             <div>

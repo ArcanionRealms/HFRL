@@ -573,6 +573,41 @@
                 localStorage.setItem('hfrl-settings', JSON.stringify(this.settings));
             }
             
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-20 right-6 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+                
+                switch (type) {
+                    case 'success':
+                        notification.classList.add('bg-green-600', 'text-white');
+                        break;
+                    case 'error':
+                        notification.classList.add('bg-red-600', 'text-white');
+                        break;
+                    case 'warning':
+                        notification.classList.add('bg-yellow-600', 'text-white');
+                        break;
+                    default:
+                        notification.classList.add('bg-cyan-600', 'text-white');
+                }
+                
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.classList.remove('translate-x-full');
+                }, 100);
+                
+                setTimeout(() => {
+                    notification.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            document.body.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+            
             setupEventListeners() {
                 // Theme selection
                 document.querySelectorAll('.theme-option').forEach(option => {
@@ -747,32 +782,52 @@
             const providers = ['openai', 'anthropic', 'deepseek', 'kimi'];
             let savedCount = 0;
             
+            console.log('Saving API keys...');
+            
             providers.forEach(provider => {
                 const apiKeyInput = document.getElementById(`${provider}-api-key`);
+                console.log(`Provider: ${provider}, Input found: ${!!apiKeyInput}`);
+                
                 if (apiKeyInput) {
                     const apiKey = apiKeyInput.value.trim();
+                    console.log(`API key for ${provider}: ${apiKey ? 'present (' + apiKey.length + ' chars)' : 'empty'}`);
+                    
                     if (apiKey) {
                         localStorage.setItem(`${provider}_api_key`, apiKey);
+                        console.log(`Saved ${provider}_api_key to localStorage`);
                         savedCount++;
                     }
                 }
             });
             
+            // Verify save
+            console.log('Verifying saved keys:');
+            providers.forEach(provider => {
+                const saved = localStorage.getItem(`${provider}_api_key`);
+                console.log(`${provider}_api_key in localStorage: ${saved ? 'yes (' + saved.length + ' chars)' : 'no'}`);
+            });
+            
             if (savedCount > 0) {
-                settingsManager.showNotification(`Saved ${savedCount} API key(s) successfully!`, 'success');
+                settingsManager.showNotification(`Saved ${savedCount} API key(s) successfully! Keys will persist across sessions.`, 'success');
             } else {
-                settingsManager.showNotification('No API keys to save', 'warning');
+                settingsManager.showNotification('No API keys to save. Please enter at least one API key.', 'warning');
             }
         }
         
         function loadSavedAPIKeys() {
             const providers = ['openai', 'anthropic', 'deepseek', 'kimi'];
             
+            console.log('Loading saved API keys...');
+            
             providers.forEach(provider => {
                 const savedKey = localStorage.getItem(`${provider}_api_key`);
                 const apiKeyInput = document.getElementById(`${provider}-api-key`);
+                
+                console.log(`${provider}: saved key exists: ${!!savedKey}, input found: ${!!apiKeyInput}`);
+                
                 if (savedKey && apiKeyInput) {
                     apiKeyInput.value = savedKey;
+                    console.log(`Loaded ${provider} API key into input field`);
                 }
             });
         }
