@@ -342,12 +342,22 @@ class HFRLApp {
                 this.showNotification(`Connection failed: ${data.message}`, 'error');
             }
         } catch (error) {
-            statusElement.innerHTML = `
-                <span class="status-indicator status-disconnected"></span>
-                <span class="text-red-400">Error</span>
-            `;
-            this.showNotification('Connection test failed. Check backend server.', 'error');
             console.error('Connection test error:', error);
+            
+            // Check if it's a network error (backend not available)
+            if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+                statusElement.innerHTML = `
+                    <span class="status-indicator status-connected"></span>
+                    <span class="text-yellow-400">Demo Mode</span>
+                `;
+                this.showNotification('Backend not connected. App will work in demo mode with mock data.', 'warning');
+            } else {
+                statusElement.innerHTML = `
+                    <span class="status-indicator status-disconnected"></span>
+                    <span class="text-red-400">Error</span>
+                `;
+                this.showNotification('Connection test failed. Check backend server.', 'error');
+            }
         }
     }
     
@@ -449,13 +459,19 @@ class HFRLApp {
             this.isGenerating = false;
             
         } catch (error) {
-            this.isGenerating = false;
-            this.showNotification(`Generation failed: ${error.message}`, 'error');
             console.error('Generation error:', error);
-            document.getElementById('generation-progress').classList.add('hidden');
             
-            // Fallback to mock data if backend is not available
-            this.generateMockContent();
+            // Check if it's a network error (backend not available)
+            if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+                console.log('Backend not available, using mock data...');
+                this.showNotification('Using demo mode (backend not connected)', 'info');
+                // Fallback to mock data if backend is not available
+                this.generateMockContent();
+            } else {
+                this.isGenerating = false;
+                this.showNotification(`Generation failed: ${error.message}`, 'error');
+                document.getElementById('generation-progress').classList.add('hidden');
+            }
         }
     }
     

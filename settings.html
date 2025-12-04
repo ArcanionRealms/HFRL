@@ -773,8 +773,16 @@
                     settingsManager.showNotification(`${provider} connection failed: ${data.message}`, 'error');
                 }
             } catch (error) {
-                settingsManager.showNotification(`Connection test failed: ${error.message}`, 'error');
                 console.error('Connection test error:', error);
+                
+                // Check if it's a network error (backend not available)
+                if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+                    // Save the key anyway since we can't test without backend
+                    localStorage.setItem(`${provider}_api_key`, apiKey);
+                    settingsManager.showNotification(`API key saved! (Backend not connected - will work in demo mode)`, 'warning');
+                } else {
+                    settingsManager.showNotification(`Connection test failed: ${error.message}`, 'error');
+                }
             }
         }
         
